@@ -12,6 +12,7 @@ app.use(cors());
 app.options('*', cors());
 
 const otpDatabase = new Map();
+const userDatabase = new Map();
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -121,6 +122,28 @@ app.post('/api/validate-otp', (req, res) => {
         username: email,
         userid: crypto.randomUUID(),
         credit: 0
+    });
+});
+
+app.post('/api/update-credit', (req, res) => {
+    const { email, credit } = req.body;
+
+    if (!email || credit === undefined) {
+        return res.status(400).json({ status: 'Failed', message: 'Email and credit are required' });
+    }
+
+    if (typeof credit !== 'number') {
+        return res.status(400).json({ status: 'Failed', message: 'Credit must be a number' });
+    }
+
+    const user = userDatabase.get(email) || { email };
+    user.credit = credit;
+    userDatabase.set(email, user);
+
+    res.json({
+        status: 'Success',
+        message: 'Credit updated successfully.',
+        user
     });
 });
 
