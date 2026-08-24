@@ -125,6 +125,13 @@ app.post('/api/validate-otp', (req, res) => {
     });
 });
 
+app.get('/api/users', (req, res) => {
+    res.json({
+        status: 'Success',
+        users: Array.from(userDatabase.values())
+    });
+});
+
 app.post('/api/update-credit', (req, res) => {
     const { email, credit } = req.body;
 
